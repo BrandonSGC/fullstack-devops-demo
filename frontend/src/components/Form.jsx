@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { createUser } from "../api/createUser";
+import { createUser } from "../api/users";
 import "./Form.css";
 
-export const Form = () => {
+export const Form = ({setUsers}) => {
   const [form, setForm] = useState({
     name: "",
     surname: "",
@@ -28,6 +28,9 @@ export const Form = () => {
     }, 3000);
 
     if (!response.success) return;
+
+    // Update users list in parent component
+    setUsers((prevUsers) => [...prevUsers, response.user]);
 
     // Clear form
     setForm({

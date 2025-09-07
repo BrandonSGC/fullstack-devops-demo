@@ -42,7 +42,7 @@
 .grid {
   display: flex;
   flex-direction: column-reverse;
-  gap: 50px;
+  gap: 10px;
 }
 
 @media (min-width: 768px) {

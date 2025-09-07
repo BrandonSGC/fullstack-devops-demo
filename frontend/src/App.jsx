@@ -1,11 +1,22 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
+import { Form, ListUsers } from "./components";
+import { getAllUsers } from "./api";
 import "./App.css";
-import { Form } from "./components";
 
 function App() {
   const [count, setCount] = useState(0);
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const response = await getAllUsers();
+      setUsers(response.users);
+    };
+
+    fetchUsers();
+  }, []);
 
   return (
     <>
@@ -21,10 +32,12 @@ function App() {
 
       <div className="grid">
         {/* Form component */}
-        <Form />
+        <Form setUsers={setUsers} />
 
         {/* TODO: FetchUsers component */}
-        
+        <div>
+          <ListUsers users={users} />
+        </div>
       </div>
 
       <div className="card">

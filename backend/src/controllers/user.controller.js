@@ -36,6 +36,19 @@ export const createUser = async (req, res) => {
   }
 };
 
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.findAll();
+    res.status(200).json({ users, success: true });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Internal Server Error while fetching users",
+      success: false,
+    });
+  }
+};
+
 export const getUserByEmail = async (req, res) => {
   try {
     const { email } = req.params;

@@ -1,6 +1,7 @@
 # root documentation
 *.docx
 *.pdf
+*.tmp
 
 # ===== Backend (Node.js) =====
 node_modules/

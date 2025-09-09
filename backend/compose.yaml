@@ -1,0 +1,42 @@
+# -----------------
+# This Docker Compose file is for LOCAL DEVELOPMENT ONLY.
+# It spins up:
+#  - backend container (Node.js app)
+#  - local MySQL container for testing
+# In production, the backend container will connect to Azure MySQL.
+# -----------------
+
+services:
+  db:
+    image: mysql               # Official MySQL image
+    container_name: mysql_db
+    restart: always            # To always restart if it crashes
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: fullstack_devops_demo
+    # Optional: expose port if you want to connect from host
+    # ports:
+    #   - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  backend:
+    build: .                  # Build from Dockerfile
+    image: backend_api:v1
+    container_name: backend_app
+    restart: always
+    ports:
+      - "8000:3030"           # Host port 8000 → container port 3030
+    environment:
+      DB_HOST: db             # Connect to MySQL container locally
+      DB_USER: root
+      DB_PASS: root
+      DB_NAME: fullstack_devops_demo
+      DB_PORT: 3306
+      PORT: 3030
+      NODE_ENV: development
+    depends_on:
+      - db
+
+volumes:
+  mysql_data:

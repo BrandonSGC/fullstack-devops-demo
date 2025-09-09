@@ -1,6 +1,7 @@
 variable "subscription_id" {
   description = "The Azure Subscription ID for the providers.tf file"
   type        = string
+  sensitive   = true
 }
 
 variable "rg_name" {
@@ -24,10 +25,10 @@ variable "db_name" {
 variable "db_admin" {
   description = "The database administrator username"
   type        = string
-  default     = "psqladmin"
+  sensitive   = true
 }
 variable "db_password" {
   description = "The database administrator password"
   type        = string
-  default     = "P@ssw0rd!"
+  sensitive   = true
 }

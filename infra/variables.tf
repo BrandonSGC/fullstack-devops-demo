@@ -27,8 +27,14 @@ variable "db_admin" {
   type        = string
   sensitive   = true
 }
+
 variable "db_password" {
   description = "The database administrator password"
   type        = string
   sensitive   = true
+}
+
+variable "db_port" {
+  description = "The database port number"
+  type        = string
 }

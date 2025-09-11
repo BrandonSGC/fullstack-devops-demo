@@ -18,6 +18,13 @@ resource "azurerm_subnet" "backend_subnet" {
   resource_group_name  = azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = ["10.0.1.0/24"]
+
+  delegation {
+    name = "backend-delegation"
+    service_delegation {
+      name = "Microsoft.Web/serverFarms"
+    }
+  }
 }
 
 // Subnet for Database.
@@ -50,7 +57,27 @@ resource "azurerm_linux_web_app" "backend" {
   location            = azurerm_resource_group.rg.location
   service_plan_id     = azurerm_service_plan.plan.id
 
-  site_config {}
+  # VNet Integration
+  virtual_network_subnet_id = azurerm_subnet.backend_subnet.id
+
+
+  site_config {
+    application_stack {
+      docker_registry_url = "https://index.docker.io"
+      docker_image_name   = "brandonsgc/backend-app:latest"
+    }
+  }
+
+  app_settings = {
+    "DB_HOST"       = azurerm_mysql_flexible_server.mysql_server.fqdn
+    "DB_USER"       = var.db_admin
+    "DB_PASS"       = var.db_password
+    "DB_NAME"       = var.db_name
+    "DB_PORT"       = var.db_port
+    "NODE_ENV"      = "production"
+    "PORT"          = "3030"
+    "WEBSITES_PORT" = "3030"
+  }
 
   depends_on = [azurerm_service_plan.plan]
 }
@@ -65,8 +92,8 @@ resource "azurerm_static_web_app" "frontend" {
   depends_on          = [azurerm_resource_group.rg]
 }
 
-// MySQL Server in VNet
-resource "azurerm_mysql_flexible_server" "db" {
+// MySQL Server
+resource "azurerm_mysql_flexible_server" "mysql_server" {
   name                   = var.db_name
   resource_group_name    = azurerm_resource_group.rg.name
   location               = azurerm_resource_group.rg.location
@@ -80,11 +107,28 @@ resource "azurerm_mysql_flexible_server" "db" {
   depends_on = [azurerm_subnet.db_subnet]
 }
 
+// Create DB
+resource "azurerm_mysql_flexible_database" "db" {
+  name                = "fullstackdb"
+  resource_group_name = var.rg_name
+  server_name         = azurerm_mysql_flexible_server.mysql_server.name
+  charset             = "utf8"
+  collation           = "utf8_unicode_ci"
+}
+
 // Outputs
 output "backend_url" {
   value = azurerm_linux_web_app.backend.default_hostname
 }
 
+output "frontend_url" {
+  value = azurerm_static_web_app.frontend.default_host_name
+}
+
 output "mysql_host" {
-  value = azurerm_mysql_flexible_server.db.fqdn
+  value = azurerm_mysql_flexible_server.mysql_server.fqdn
+}
+
+output "mysql_db" {
+  value = azurerm_mysql_flexible_database.db.name
 }

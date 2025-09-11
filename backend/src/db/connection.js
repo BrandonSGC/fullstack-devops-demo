@@ -12,5 +12,13 @@ export const sequelize = new Sequelize(
     host: process.env.DB_HOST,
     port: process.env.DB_PORT || 3306,
     dialect: "mysql",
+    // For a production environment with should use SSL, but in this case we
+    // disable it because this is just part of my learning process on DevOps.
+    logging: false,
+    dialectOptions: {
+      ssl: {
+        rejectUnauthorized: false,
+      },
+    },
   }
 );

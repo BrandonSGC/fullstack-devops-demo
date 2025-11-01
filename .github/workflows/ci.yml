@@ -48,9 +48,21 @@ jobs:
         working-directory: backend
         run: npm install
 
+      - name: Wait for MySQL to be ready
+        run: |
+          for i in {1..15}; do
+            if mysqladmin ping -h"$DB_HOST" --silent; then
+              echo "✅ MySQL is ready!"
+              break
+            fi
+            echo "Waiting for MySQL... ($i/15)"
+            sleep 4
+          done
+
       - name: Run backend tests
         working-directory: backend
         run: npm test
+
 
       # Frontend
       - name: Set up Node.js for frontend

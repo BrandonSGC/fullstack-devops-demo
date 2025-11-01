@@ -1,12 +1,19 @@
 import request from "supertest";
 import app from "../../app.js";
 import { User } from "../../models/user.js";
+import { sequelize } from "../../db/connection.js";
 
 describe("User Controller Tests", () => {
   // Clear the User table before running tests
   beforeAll(async () => {
+    // Sync the database for testing only
+    await sequelize.sync({ force: true });
     // Delete all users
     await User.destroy({ where: {}, truncate: true });
+  });
+
+  afterAll(async () => {
+    await sequelize.close();
   });
 
   // Create User Tests

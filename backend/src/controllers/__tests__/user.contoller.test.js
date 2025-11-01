@@ -9,6 +9,10 @@ describe("User Controller Tests", () => {
     await User.destroy({ where: {}, truncate: true });
   });
 
+  afterAll(async () => {
+    await sequelize.close();
+  });
+
   // Create User Tests
   describe("POST /api/users", () => {
     test("Should return 400 if required fields are missing", async () => {

@@ -51,7 +51,7 @@ jobs:
       - name: Wait for MySQL to be ready
         run: |
           for i in {1..15}; do
-            if mysqladmin ping -h"$DB_HOST" --silent; then
+            if mysqladmin ping -h"$DB_HOST" -proot --silent; then
               echo "✅ MySQL is ready!"
               break
             fi

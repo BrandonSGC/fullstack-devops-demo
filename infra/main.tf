@@ -60,11 +60,14 @@ resource "azurerm_linux_web_app" "backend" {
   # VNet Integration
   virtual_network_subnet_id = azurerm_subnet.backend_subnet.id
 
+  # TODO: Add basic_authentication settings.
+  # ftp_publish_basic_authentication_enabled       = true -> this is not the one i think
+  # webdeploy_publish_basic_authentication_enabled = true
 
   site_config {
     application_stack {
       docker_registry_url = "https://index.docker.io"
-      docker_image_name   = "brandonsgc/backend-app:latest"
+      docker_image_name   = "brandonsgc/backend-app:${var.docker_image_tag}"
     }
   }
 
@@ -131,4 +134,9 @@ output "mysql_host" {
 
 output "mysql_db" {
   value = azurerm_mysql_flexible_database.db.name
+}
+
+output "static_web_app_token" {
+  value     = azurerm_static_web_app.frontend.api_key
+  sensitive = true
 }

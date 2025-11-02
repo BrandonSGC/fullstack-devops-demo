@@ -38,3 +38,8 @@ variable "db_port" {
   description = "The database port number"
   type        = string
 }
+
+variable "docker_image_tag" {
+  type    = string
+  default = "latest"
+}

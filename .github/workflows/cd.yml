@@ -1,26 +1,24 @@
 name: CD - Build and Deploy to Azure
 
 on:
-  push:
-    branches:
-      - dev
-      - main
-
-  pull_request:
-    types: [opened, synchronize, reopened]
-    branches:
-      - dev
+  workflow_run:
+    workflows: ["CI - Build and Test"]
+    types:
+      - completed
 
 jobs:
   build-and-push-docker:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
     outputs:
       image_tag: ${{ steps.vars.outputs.image_tag }}
 
     steps:
-      - name: Checkout code
+      - name: Download artifact or checkout the same commit
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }}
 
       - name: Log in to Docker Hub
         uses: azure/docker-login@v1
